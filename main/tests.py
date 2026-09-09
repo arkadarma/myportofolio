@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from main.models import Experience
+from main.models import Experience, Project
 
 
 class MainTest(TestCase):
@@ -61,3 +61,27 @@ class MainTest(TestCase):
         self.assertFalse(self.experience.is_ongoing)
         self.assertContains(response, "Selesai")
         self.assertNotContains(response, "Sedang berlangsung")
+
+    def test_project_url_is_accessible(self):
+        response = self.client.get(reverse("main:show_projects"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "projects.html")
+
+    def test_project_data_is_displayed(self):
+        project = Project.objects.create(
+            name="Portfolio Website",
+            description="Personal portfolio website using Django.",
+            technology="Django",
+        )
+
+        response = self.client.get(reverse("main:show_projects"))
+
+        self.assertContains(response, project.name)
+        self.assertContains(response, project.description)
+        self.assertContains(response, project.technology)
+
+    def test_empty_project_page(self):
+        response = self.client.get(reverse("main:show_projects"))
+
+        self.assertContains(response, "Belum ada project.")
