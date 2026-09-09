@@ -81,3 +81,29 @@ Setelah implementasi selesai, saya melakukan pengujian pada browser dan melakuka
 
 Penggunaan branch `tugas-1` juga membantu menjaga hasil Tutorial 01 tetap terpisah dari perubahan yang dibuat untuk Tugas 1.
 
+### Tugas 2
+
+1. Ketika pengguna membuka halaman portfolio baru, browser mengirimkan request ke URL `/projects/`. Request tersebut diterima oleh `urls.py` pada level project dan diteruskan ke `urls.py` pada aplikasi `main`. Pada `main/urls.py`, URL `/projects/` diarahkan ke view `show_projects`. View tersebut mengambil data dari model `Project` menggunakan `Project.objects.all()`, kemudian memasukkannya ke dalam context dengan nama `project_list`. Context tersebut diteruskan ke template `projects.html`. Template menggunakan Django Template Language untuk melakukan perulangan terhadap data Project dan menampilkan setiap object. Jika tidak terdapat data, template menampilkan pesan kondisi kosong. Setelah template selesai dirender, HTML dikirim kembali ke browser.
+
+2. Data bagian portfolio baru sebaiknya disimpan pada model karena model menyediakan struktur data yang tersimpan secara terorganisir di database. Jika data ditulis langsung di dalam template, perubahan data mengharuskan pengubahan kode HTML. Dengan menggunakan model, data dapat ditambah, diubah, atau dihapus tanpa mengubah template. Pendekatan ini membuat aplikasi lebih mudah dipelihara dan dikembangkan ketika jumlah data bertambah atau data perlu digunakan oleh bagian aplikasi lainnya.
+
+3. `makemigrations` digunakan untuk membuat file migration berdasarkan perubahan pada model, sedangkan `migrate` digunakan untuk menerapkan migration tersebut ke database. Pada tugas ini, saya menambahkan model `Project` dengan field `name`, `description`, dan `technology`. Saya kemudian menjalankan `python manage.py makemigrations` untuk membuat migration `0002_project.py`, lalu menjalankan `python manage.py migrate` untuk menerapkan perubahan struktur database tersebut.
+
+#### AI Disclosure
+
+Dalam pengerjaan Tugas 2, saya menggunakan ChatGPT sebagai alat bantu untuk memahami instruksi tugas, memahami alur Model-View-Template (MVT) pada Django, serta membantu memeriksa dan memperbaiki implementasi kode.
+
+Bagian yang dibantu oleh AI meliputi:
+- Menentukan struktur model `Project` dengan minimal tiga field selain primary key.
+- Membantu menyusun view `show_projects` yang mengambil data dari model dan meneruskannya melalui context.
+- Membantu menyusun routing untuk halaman `/projects/`.
+- Membantu menyusun template `projects.html` dengan Django Template Language, termasuk perulangan data dan kondisi ketika database kosong.
+- Membantu menyusun unit test untuk menguji akses URL, tampilan data Project, dan kondisi ketika belum ada data.
+- Membantu memeriksa error dan memastikan seluruh unit test berhasil dijalankan.
+
+Saya tetap menjalankan kode, memeriksa hasil pada browser, menjalankan migration, menjalankan unit test, dan memverifikasi hasil implementasi secara langsung.
+
+Strategi prompting yang digunakan adalah memberikan konteks kode yang sedang dikerjakan, meminta bantuan secara bertahap pada setiap bagian MVT, kemudian memeriksa hasil setiap perubahan sebelum melanjutkan ke tahap berikutnya. AI digunakan sebagai pendamping untuk memahami dan memeriksa implementasi, bukan sebagai pengganti proses pengujian dan verifikasi kode.
+
+Riwayat percakapan dengan AI digunakan sebagai log proses bantuan selama pengerjaan tugas.
+
