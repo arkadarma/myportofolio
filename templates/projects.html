@@ -8,9 +8,9 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/style.css?v=3">
 </head>
 
 <body>
@@ -19,7 +19,7 @@
         <div class="container">
 
             <a href="{% url 'main:show_main' %}" class="brand">
-                {{ name }}
+                ARKA<span>.</span>
             </a>
 
             <nav>
@@ -34,34 +34,52 @@
 
     <main>
 
-        <section class="education" id="projects">
+        <section class="portfolio-section projects-section">
 
             <div class="container">
 
-                <p class="section-kicker">
-                    My Work
-                </p>
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">
+                            My Work
+                        </p>
 
-                <h1>Projects</h1>
+                        <h1>Projects</h1>
+                    </div>
+
+                    <span class="section-number">03</span>
+                </div>
 
 
                 {% if project_list %}
 
-                    <div class="education-grid">
+                    <div class="projects-grid">
 
                         {% for project in project_list %}
 
-                            <article class="education-card">
+                            <article class="project-card">
 
-                                <h3>{{ project.name }}</h3>
+                                <div class="project-number">
+                                    0{{ forloop.counter }}
+                                </div>
 
-                                <p>
-                                    {{ project.description }}
-                                </p>
+                                <div class="project-content">
 
-                                <span>
-                                    {{ project.technology }}
-                                </span>
+                                    <p class="project-tech">
+                                        {{ project.technology }}
+                                    </p>
+
+                                    <h2>
+                                        {{ project.name }}
+                                    </h2>
+
+                                    <p class="project-description">
+                                        {{ project.description }}
+                                    </p>
+
+                                </div>
+
+                                <span class="project-arrow">↗</span>
 
                             </article>
 
@@ -71,7 +89,10 @@
 
                 {% else %}
 
-                    <p>Belum ada project.</p>
+                    <div class="empty-state">
+                        <span>01</span>
+                        <p>Belum ada project.</p>
+                    </div>
 
                 {% endif %}
 
@@ -87,11 +108,14 @@
         <div class="container">
 
             <p>
-                &copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.
+                © 2026 {{ name }}
             </p>
 
-        </div>
+            <span>
+                Fakultas Ilmu Komputer · Universitas Indonesia
+            </span>
 
+        </div>
     </footer>
 
 </body>
