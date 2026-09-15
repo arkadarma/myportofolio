@@ -9,6 +9,7 @@ class ProjectForm(forms.ModelForm):
             "name",
             "description",
             "technology",
+            "project_url",
             "project_image_url",
         ]
 
@@ -16,6 +17,7 @@ class ProjectForm(forms.ModelForm):
             "name": "Nama Proyek",
             "description": "Deskripsi Proyek",
             "technology": "Teknologi yang Digunakan",
+            "project_url": "URL Proyek",
             "project_image_url": "URL Gambar Proyek",
         }
 
@@ -35,6 +37,11 @@ class ProjectForm(forms.ModelForm):
             "technology": forms.TextInput(
                 attrs={
                     "placeholder": "Django, Python, HTML, CSS",
+                }
+            ),
+            "project_url": forms.URLInput(
+                attrs={
+                    "placeholder": "https://github.com/username/project",
                 }
             ),
             "project_image_url": forms.URLInput(
