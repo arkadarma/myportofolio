@@ -37,6 +37,7 @@ class Project(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     technology = models.CharField(max_length=255)
+    project_image_url = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return self.name
