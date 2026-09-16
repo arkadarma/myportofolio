@@ -1,125 +1,233 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
 
+{% block meta %}
     <title>Experience - {{ name }}</title>
+{% endblock meta %}
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+{% block content %}
 
-    <link rel="stylesheet" href="/static/css/style.css?v=3">
-</head>
+<main>
 
-<body>
+    <section class="portfolio-section experience-section" id="experience">
 
-    <header class="site-header">
         <div class="container">
 
-            <a href="{% url 'main:show_main' %}" class="brand">
-                ARKA<span>.</span>
-            </a>
+            <div class="section-heading">
 
-            <nav>
-                <a href="{% url 'main:show_main' %}">Profile</a>
-                <a href="{% url 'main:show_experience' %}">Experience</a>
-                <a href="{% url 'main:show_projects' %}">Projects</a>
-            </nav>
+                <div>
+                    <p class="section-kicker">
+                        My Journey So Far
+                    </p>
 
-        </div>
-    </header>
-
-
-    <main>
-
-        <section class="portfolio-section experience-section">
-
-            <div class="container">
-
-                <div class="section-heading">
-                    <div>
-                        <p class="section-kicker">
-                            My Journey So Far
-                        </p>
-
-                        <h1>Experience</h1>
-                    </div>
-
-                    <span class="section-number">02</span>
+                    <h1>Experience</h1>
                 </div>
 
-
-                <div class="experience-grid">
-
-                    {% for experience in experience_list %}
-
-                        <article class="experience-card">
-
-                            <div class="experience-top">
-
-                                <span class="experience-category">
-                                    {{ experience.get_category_display }}
-                                </span>
-
-                                {% if experience.is_ongoing %}
-                                    <span class="experience-status">
-                                        Sedang berlangsung
-                                    </span>
-                                {% else %}
-                                    <span class="experience-status experience-done">
-                                        Selesai
-                                    </span>
-                                {% endif %}
-
-                            </div>
-
-
-                            <h2>
-                                {{ experience.title }}
-                            </h2>
-
-
-                            <p class="experience-description">
-                                {{ experience.description }}
-                            </p>
-
-                        </article>
-
-
-                    {% empty %}
-
-                        <div class="empty-state">
-                            <span>01</span>
-                            <p>Belum ada pengalaman yang ditambahkan.</p>
-                        </div>
-
-                    {% endfor %}
-
-                </div>
+                <span class="section-number">02</span>
 
             </div>
 
-        </section>
 
-    </main>
+            <div style="margin-bottom: 24px;">
+
+                <a
+                    href="{% url 'main:create_experience' %}"
+                    class="button"
+                >
+                    + Tambah Experience
+                </a>
+
+            </div>
 
 
-    <footer class="site-footer">
+            <div class="experience-grid">
 
-        <div class="container">
+                {% for experience in experience_list %}
 
-            <p>
-                © 2026 {{ name }}
-            </p>
+                    <article class="experience-card">
 
-            <span>
-                Fakultas Ilmu Komputer · Universitas Indonesia
-            </span>
+                        <div class="experience-top">
+
+                            <span class="experience-category">
+                                {{ experience.get_category_display }}
+                            </span>
+
+                            {% if experience.is_ongoing %}
+
+                                <span class="experience-status">
+                                    Sedang berlangsung
+                                </span>
+
+                            {% else %}
+
+                                <span class="experience-status experience-done">
+                                    Selesai
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <h2>
+                            {{ experience.title }}
+                        </h2>
+
+
+                        <p class="experience-description">
+                            {{ experience.description }}
+                        </p>
+
+
+                        {% if experience.thumbnail %}
+
+                            <div class="experience-thumbnail">
+                                <img
+                                    src="{{ experience.thumbnail }}"
+                                    alt="{{ experience.title }}"
+                                >
+                            </div>
+
+                        {% endif %}
+
+
+                        <div class="experience-card-actions">
+
+                            <a
+                                href="{% url 'main:update_experience' experience.id %}"
+                                class="button"
+                            >
+                                Edit
+                            </a>
+
+                            <button
+                                type="button"
+                                class="button button-danger"
+                                onclick="openDeleteModal('{{ experience.id }}')"
+                            >
+                                Delete
+                            </button>
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- DELETE MODAL -->
+
+                    <div
+                        id="delete-modal-{{ experience.id }}"
+                        class="experience-modal"
+                    >
+
+                        <div
+                            class="experience-modal-overlay"
+                            onclick="closeDeleteModal('{{ experience.id }}')"
+                        ></div>
+
+
+                        <div class="experience-modal-content">
+
+                            <button
+                                type="button"
+                                class="experience-modal-close"
+                                onclick="closeDeleteModal('{{ experience.id }}')"
+                            >
+                                ×
+                            </button>
+
+
+                            <p class="experience-modal-kicker">
+                                Confirm Action
+                            </p>
+
+
+                            <h2>
+                                Hapus Experience?
+                            </h2>
+
+
+                            <p class="experience-modal-description">
+                                Yakin ingin menghapus
+                                <strong>{{ experience.title }}</strong>?
+                            </p>
+
+
+                            <div class="experience-modal-actions">
+
+                                <button
+                                    type="button"
+                                    class="button button-secondary"
+                                    onclick="closeDeleteModal('{{ experience.id }}')"
+                                >
+                                    Batal
+                                </button>
+
+
+                                <form
+                                    method="POST"
+                                    action="{% url 'main:delete_experience' experience.id %}"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="button button-danger"
+                                    >
+                                        Ya, Hapus
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                {% empty %}
+
+                    <div class="empty-state">
+
+                        <span>01</span>
+
+                        <p>
+                            Belum ada pengalaman yang ditambahkan.
+                        </p>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
 
         </div>
-    </footer>
 
-</body>
-</html>
+    </section>
+
+</main>
+
+
+<script>
+    function openDeleteModal(id) {
+        const modal = document.getElementById("delete-modal-" + id);
+
+        if (modal) {
+            modal.classList.add("is-visible");
+            document.body.style.overflow = "hidden";
+        }
+    }
+
+
+    function closeDeleteModal(id) {
+        const modal = document.getElementById("delete-modal-" + id);
+
+        if (modal) {
+            modal.classList.remove("is-visible");
+            document.body.style.overflow = "";
+        }
+    }
+</script>
+
+{% endblock content %}

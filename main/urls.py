@@ -7,6 +7,10 @@ from main.views import (
     create_project,
     get_projects_json,
     delete_project,
+    create_experience,
+    update_experience,
+    delete_experience,
+    get_experience_json,
 )
 
 
@@ -15,13 +19,59 @@ app_name = "main"
 urlpatterns = [
     path("", show_main, name="show_main"),
 
-    path("experience/", show_experience, name="show_experience"),
+    # =========================
+    # EXPERIENCE
+    # =========================
+    path(
+        "experience/",
+        show_experience,
+        name="show_experience",
+    ),
 
-    path("projects/", show_projects, name="show_projects"),
+    path(
+        "experience/add/",
+        create_experience,
+        name="create_experience",
+    ),
 
-    path("projects/add/", create_project, name="create_project"),
+    path(
+        "experience/<uuid:experience_id>/edit/",
+        update_experience,
+        name="update_experience",
+    ),
 
-    path("api/projects/", get_projects_json, name="get_projects_json"),
+    path(
+        "experience/<uuid:experience_id>/delete/",
+        delete_experience,
+        name="delete_experience",
+    ),
+
+    path(
+        "api/experience/",
+        get_experience_json,
+        name="get_experience_json",
+    ),
+
+    # =========================
+    # PROJECT
+    # =========================
+    path(
+        "projects/",
+        show_projects,
+        name="show_projects",
+    ),
+
+    path(
+        "projects/add/",
+        create_project,
+        name="create_project",
+    ),
+
+    path(
+        "api/projects/",
+        get_projects_json,
+        name="get_projects_json",
+    ),
 
     path(
         "projects/<uuid:project_id>/delete/",
