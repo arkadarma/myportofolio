@@ -107,3 +107,24 @@ Strategi prompting yang digunakan adalah memberikan konteks kode yang sedang dik
 
 Riwayat percakapan dengan AI digunakan sebagai log proses bantuan selama pengerjaan tugas.
 
+### Tugas 3
+
+1. `ModelForm` digunakan pada Django karena dapat membuat form berdasarkan model yang sudah didefinisikan sehingga proses pembuatan form menjadi lebih praktis dan konsisten dengan struktur data pada database. `ModelForm` juga membantu melakukan validasi data sebelum data disimpan ke database. Dibandingkan membuat form HTML secara manual, penggunaan `ModelForm` mengurangi kode yang harus ditulis dan mempermudah proses create maupun update data. Sementara itu, `{% csrf_token %}` wajib ditambahkan pada form yang melakukan request `POST` untuk memberikan perlindungan terhadap serangan Cross-Site Request Forgery (CSRF). Token tersebut memastikan request berasal dari form yang valid pada aplikasi.
+
+2. JSON lebih banyak digunakan dalam pengembangan aplikasi web modern karena formatnya lebih sederhana, ringan, dan mudah dibaca oleh manusia maupun mesin. Struktur JSON juga dekat dengan struktur data yang digunakan dalam banyak bahasa pemrograman, sehingga cocok digunakan untuk komunikasi antara frontend dan backend melalui API. Dibandingkan XML, JSON umumnya membutuhkan lebih sedikit karakter untuk merepresentasikan data sehingga lebih ringkas dan lebih praktis untuk pertukaran data pada aplikasi web.
+
+3. Saat data portfolio dikembalikan dalam bentuk JSON, data dari model Django terlebih dahulu diambil dari database menggunakan query terhadap model. Setelah itu, data tersebut dilakukan `serialization` menggunakan serializer Django agar objek model dapat diubah menjadi format JSON. JSON tersebut kemudian dikembalikan melalui `HttpResponse` dengan `content_type="application/json"`. Proses serialization diperlukan karena objek model Django tidak dapat langsung dikirim sebagai JSON. Serialization mengubah objek dan field-field pada model menjadi representasi data yang dapat dikirim dan diproses sebagai JSON. Pada halaman Experience, JSON tersebut kemudian dilakukan `deserialization` kembali menjadi objek Python agar datanya dapat digunakan dan ditampilkan pada template HTML.
+
+### AI Disclosure
+
+Dalam pengerjaan Tugas 3, saya menggunakan ChatGPT sebagai alat bantu untuk memahami requirement tugas, menjelaskan konsep Django seperti `ModelForm`, serialization/deserialization JSON, template inheritance, serta membantu menyusun dan melakukan debugging pada beberapa bagian implementasi.
+
+AI digunakan untuk membantu pada bagian:
+- Perancangan `ExperienceForm` pada `forms.py`.
+- Penambahan fungsi create, update, delete, serialization, dan deserialization pada `views.py`.
+- Penambahan routing pada `urls.py`.
+- Refactoring template menggunakan `{% extends "base.html" %}`.
+- Penyusunan dan perbaikan tampilan form serta modal konfirmasi delete pada HTML dan CSS.
+- Membantu menganalisis error dan memeriksa hasil implementasi selama pengujian.
+
+Seluruh implementasi tetap diuji secara manual pada project Django melalui browser dan `python manage.py check`. Saya juga melakukan penyesuaian manual terhadap kode, struktur template, CSS, dan alur fitur setelah hasil pengujian.
