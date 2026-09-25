@@ -27,16 +27,20 @@
             </div>
 
 
-            <div style="margin-bottom: 24px;">
+            {% if user.is_superuser %}
 
-                <a
-                    href="{% url 'main:create_experience' %}"
-                    class="button"
-                >
-                    + Tambah Experience
-                </a>
+                <div style="margin-bottom: 24px;">
 
-            </div>
+                    <a
+                        href="{% url 'main:create_experience' %}"
+                        class="button"
+                    >
+                        + Tambah Experience
+                    </a>
+
+                </div>
+
+            {% endif %}
 
 
             <div class="experience-grid">
@@ -90,100 +94,112 @@
                         {% endif %}
 
 
-                        <div class="experience-card-actions">
+                        {% if user.is_superuser or is_editor %}
 
-                            <a
-                                href="{% url 'main:update_experience' experience.id %}"
-                                class="button"
-                            >
-                                Edit
-                            </a>
+                            <div class="experience-card-actions">
 
-                            <button
-                                type="button"
-                                class="button button-danger"
-                                onclick="openDeleteModal('{{ experience.id }}')"
-                            >
-                                Delete
-                            </button>
+                                <a
+                                    href="{% url 'main:update_experience' experience.id %}"
+                                    class="button"
+                                >
+                                    Edit
+                                </a>
 
-                        </div>
+                                {% if user.is_superuser %}
+
+                                    <button
+                                        type="button"
+                                        class="button button-danger"
+                                        onclick="openDeleteModal('{{ experience.id }}')"
+                                    >
+                                        Delete
+                                    </button>
+
+                                {% endif %}
+
+                            </div>
+
+                        {% endif %}
 
                     </article>
 
 
-                    <!-- DELETE MODAL -->
+                    {% if user.is_superuser %}
 
-                    <div
-                        id="delete-modal-{{ experience.id }}"
-                        class="experience-modal"
-                    >
+                        <!-- DELETE MODAL -->
 
                         <div
-                            class="experience-modal-overlay"
-                            onclick="closeDeleteModal('{{ experience.id }}')"
-                        ></div>
+                            id="delete-modal-{{ experience.id }}"
+                            class="experience-modal"
+                        >
 
-
-                        <div class="experience-modal-content">
-
-                            <button
-                                type="button"
-                                class="experience-modal-close"
+                            <div
+                                class="experience-modal-overlay"
                                 onclick="closeDeleteModal('{{ experience.id }}')"
-                            >
-                                ×
-                            </button>
+                            ></div>
 
 
-                            <p class="experience-modal-kicker">
-                                Confirm Action
-                            </p>
-
-
-                            <h2>
-                                Hapus Experience?
-                            </h2>
-
-
-                            <p class="experience-modal-description">
-                                Yakin ingin menghapus
-                                <strong>{{ experience.title }}</strong>?
-                            </p>
-
-
-                            <div class="experience-modal-actions">
+                            <div class="experience-modal-content">
 
                                 <button
                                     type="button"
-                                    class="button button-secondary"
+                                    class="experience-modal-close"
                                     onclick="closeDeleteModal('{{ experience.id }}')"
                                 >
-                                    Batal
+                                    ×
                                 </button>
 
 
-                                <form
-                                    method="POST"
-                                    action="{% url 'main:delete_experience' experience.id %}"
-                                >
+                                <p class="experience-modal-kicker">
+                                    Confirm Action
+                                </p>
 
-                                    {% csrf_token %}
+
+                                <h2>
+                                    Hapus Experience?
+                                </h2>
+
+
+                                <p class="experience-modal-description">
+                                    Yakin ingin menghapus
+                                    <strong>{{ experience.title }}</strong>?
+                                </p>
+
+
+                                <div class="experience-modal-actions">
 
                                     <button
-                                        type="submit"
-                                        class="button button-danger"
+                                        type="button"
+                                        class="button button-secondary"
+                                        onclick="closeDeleteModal('{{ experience.id }}')"
                                     >
-                                        Ya, Hapus
+                                        Batal
                                     </button>
 
-                                </form>
+
+                                    <form
+                                        method="POST"
+                                        action="{% url 'main:delete_experience' experience.id %}"
+                                    >
+
+                                        {% csrf_token %}
+
+                                        <button
+                                            type="submit"
+                                            class="button button-danger"
+                                        >
+                                            Ya, Hapus
+                                        </button>
+
+                                    </form>
+
+                                </div>
 
                             </div>
 
                         </div>
 
-                    </div>
+                    {% endif %}
 
 
                 {% empty %}

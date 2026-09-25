@@ -8,6 +8,7 @@ from main.views import (
     show_experience,
     show_projects,
     create_project,
+    update_project,
     get_projects_json,
     delete_project,
     toggle_star,
@@ -20,8 +21,13 @@ from main.views import (
 
 app_name = "main"
 
+
 urlpatterns = [
-    path("", show_main, name="show_main"),
+    path(
+        "",
+        show_main,
+        name="show_main",
+    ),
 
     # =========================
     # AUTHENTICATION
@@ -90,6 +96,12 @@ urlpatterns = [
         "projects/add/",
         create_project,
         name="create_project",
+    ),
+
+    path(
+        "projects/<uuid:project_id>/edit/",
+        update_project,
+        name="update_project",
     ),
 
     path(

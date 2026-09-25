@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
 
 {% block meta %}
-    <title>Tambah Project - {{ name }}</title>
+    {% if project %}
+        <title>Edit Project - {{ name }}</title>
+    {% else %}
+        <title>Tambah Project - {{ name }}</title>
+    {% endif %}
 {% endblock meta %}
 
 {% block content %}
@@ -10,10 +14,18 @@
     <section class="experience-section">
         <div class="container">
 
-            <h1>Tambah Project</h1>
+            {% if project %}
+                <h1>Edit Project</h1>
+            {% else %}
+                <h1>Tambah Project</h1>
+            {% endif %}
 
             <form method="POST"
-                  action="{% url 'main:create_project' %}"
+                  {% if project %}
+                      action="{% url 'main:update_project' project.id %}"
+                  {% else %}
+                      action="{% url 'main:create_project' %}"
+                  {% endif %}
                   class="project-form">
 
                 {% csrf_token %}
@@ -34,9 +46,15 @@
                     </div>
                 {% endfor %}
 
-                <button type="submit" class="button">
-                    Tambah Project
-                </button>
+                {% if project %}
+                    <button type="submit" class="button">
+                        Simpan Perubahan
+                    </button>
+                {% else %}
+                    <button type="submit" class="button">
+                        Tambah Project
+                    </button>
+                {% endif %}
 
                 <a href="{% url 'main:show_projects' %}"
                    class="button button-secondary">

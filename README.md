@@ -53,6 +53,7 @@ Bagian yang dibantu AI meliputi pemahaman struktur kode HTML, CSS, dan Django, d
 Dalam proses Git, AI membantu saya memahami cara memisahkan pekerjaan Tugas 1 dari Tutorial 1 menggunakan branch `tugas-1`. Dalam proses deployment, AI membantu saya memahami cara mengirim branch tersebut ke repository PWS dan melakukan deployment melalui PWS.
 
 ### Log Prompting
+
 Beberapa contoh prompt yang saya gunakan selama pengerjaan :
 
 1. Meminta penjelasan mengenai struktur kode dan hubungan antar file pada project.
@@ -94,6 +95,7 @@ Penggunaan branch `tugas-1` juga membantu menjaga hasil Tutorial 01 tetap terpis
 Dalam pengerjaan Tugas 2, saya menggunakan ChatGPT sebagai alat bantu untuk memahami instruksi tugas, memahami alur Model-View-Template (MVT) pada Django, serta membantu memeriksa dan memperbaiki implementasi kode.
 
 Bagian yang dibantu oleh AI meliputi:
+
 - Menentukan struktur model `Project` dengan minimal tiga field selain primary key.
 - Membantu menyusun view `show_projects` yang mengambil data dari model dan meneruskannya melalui context.
 - Membantu menyusun routing untuk halaman `/projects/`.
@@ -120,6 +122,7 @@ Riwayat percakapan dengan AI digunakan sebagai log proses bantuan selama pengerj
 Dalam pengerjaan Tugas 3, saya menggunakan ChatGPT sebagai alat bantu untuk memahami requirement tugas, menjelaskan konsep Django seperti `ModelForm`, serialization/deserialization JSON, template inheritance, serta membantu menyusun dan melakukan debugging pada beberapa bagian implementasi.
 
 AI digunakan untuk membantu pada bagian:
+
 - Perancangan `ExperienceForm` pada `forms.py`.
 - Penambahan fungsi create, update, delete, serialization, dan deserialization pada `views.py`.
 - Penambahan routing pada `urls.py`.
@@ -128,3 +131,65 @@ AI digunakan untuk membantu pada bagian:
 - Membantu menganalisis error dan memeriksa hasil implementasi selama pengujian.
 
 Seluruh implementasi tetap diuji secara manual pada project Django melalui browser dan `python manage.py check`. Saya juga melakukan penyesuaian manual terhadap kode, struktur template, CSS, dan alur fitur setelah hasil pengujian.
+
+### Tugas 4
+
+Pada Tugas 4, saya melanjutkan website portfolio Django dari Tugas 3 dengan menerapkan authentication, authorization, session, cookie, serta fitur interaktif pemberian star pada project.
+
+Beberapa perubahan yang saya implementasikan meliputi:
+
+- Menambahkan role `Editor` menggunakan Django Group melalui Django Admin.
+- Menerapkan pembatasan hak akses berdasarkan role pengguna.
+- Superuser dapat membuat, mengubah, dan menghapus data portfolio.
+- Editor dapat mengubah data portfolio tetapi tidak dapat membuat atau menghapus data.
+- Pengguna biasa hanya dapat membaca data portfolio dan memberikan atau membatalkan star pada project.
+- Pengunjung yang belum login harus melakukan login sebelum melakukan tindakan yang membutuhkan akun.
+- Menerapkan pengecekan hak akses pada sisi server menggunakan `login_required` dan pengecekan role untuk menghasilkan HTTP 403 pada tindakan yang tidak diizinkan.
+- Menyembunyikan tombol create, update, dan delete pada template untuk pengguna yang tidak memiliki hak akses.
+- Menambahkan relasi `ManyToManyField` antara model `Project` dan model `User` untuk menyimpan pengguna yang memberikan star.
+- Mengimplementasikan fitur star dan unstar menggunakan request `POST` dengan `{% csrf_token %}`.
+- Menampilkan jumlah total star dan status star pengguna pada setiap project.
+- Memastikan endpoint JSON dari tugas sebelumnya tetap berfungsi dan tidak mengembalikan informasi pengguna yang memberikan star.
+
+#### AI Disclosure
+
+Dalam pengerjaan Tugas 4, saya menggunakan ChatGPT sebagai alat bantu untuk memahami konsep authentication dan authorization pada Django, memahami penggunaan Django Group, membantu menganalisis struktur kode, serta membantu melakukan debugging dan pengujian implementasi.
+
+AI digunakan untuk membantu pada bagian:
+
+- Memahami penggunaan Django Group sebagai role `Editor`.
+- Membantu menyusun dan memeriksa pengecekan authorization pada `views.py`.
+- Membantu menyusun routing untuk fitur update project.
+- Membantu menyesuaikan template agar kontrol create, update, dan delete tampil sesuai role pengguna.
+- Membantu mengimplementasikan dan memeriksa fitur star dan unstar menggunakan `ManyToManyField`.
+- Membantu menganalisis dan memperbaiki endpoint JSON agar tidak membocorkan informasi pengguna yang memberikan star.
+- Membantu menyusun dan memperluas unit test untuk menguji authentication, authorization, fitur star, dan endpoint JSON.
+- Membantu menganalisis error yang ditemukan selama implementasi dan pengujian.
+
+Setelah mendapatkan bantuan dari AI, saya menerapkan perubahan pada project, menjalankan aplikasi secara langsung, melakukan pengujian melalui browser, memeriksa hasil authorization untuk beberapa jenis pengguna, menjalankan migration, dan menjalankan unit test menggunakan `python manage.py test`.
+
+Saya tetap melakukan penyesuaian manual terhadap kode berdasarkan struktur project yang saya gunakan. Beberapa saran dari AI juga perlu disesuaikan setelah diuji agar sesuai dengan routing, template, model, dan fitur yang sudah ada pada project.
+
+#### Strategi Prompting
+
+Saya menggunakan prompting secara bertahap selama pengerjaan Tugas 4. Saya memberikan konteks berupa kode, screenshot hasil implementasi, pesan error, dan requirement tugas kepada ChatGPT. Setelah itu, saya meminta AI untuk menjelaskan penyebab masalah atau memberikan contoh perubahan kode yang sesuai dengan struktur project.
+
+Saya tidak langsung menerapkan semua saran yang diberikan. Setiap perubahan saya simpan dan uji terlebih dahulu melalui browser, Django development server, serta unit test. Jika hasilnya belum sesuai, saya memberikan kondisi terbaru kepada AI untuk dianalisis kembali dan kemudian melakukan penyesuaian manual.
+
+#### Log Prompting
+
+Beberapa contoh prompt yang saya gunakan selama pengerjaan Tugas 4:
+
+1. Meminta penjelasan mengenai cara menerapkan role `Editor` menggunakan Django Group.
+2. Meminta bantuan membatasi akses create, update, dan delete berdasarkan role pengguna.
+3. Meminta bantuan memperbaiki routing dan form agar halaman edit project tidak diarahkan ke endpoint create.
+4. Meminta bantuan memeriksa fitur star dan relasi `ManyToManyField` dengan model `User`.
+5. Meminta bantuan menganalisis endpoint JSON yang masih mengembalikan informasi `starred_by`.
+6. Meminta bantuan menyusun dan memeriksa unit test untuk authentication, authorization, star, dan API.
+7. Memberikan screenshot hasil pengujian seperti HTTP 403 dan redirect ke halaman login untuk memastikan implementasi sesuai requirement.
+
+#### Keterbatasan dan Evaluasi Penggunaan AI
+
+Penggunaan AI membantu saya memahami konsep authorization dan debugging dengan lebih cepat, tetapi solusi yang diberikan tidak selalu dapat langsung diterapkan. Saya perlu memeriksa kembali apakah perubahan yang disarankan sesuai dengan struktur project dan requirement tugas.
+
+Saya melakukan verifikasi melalui pengujian langsung. Sebagai contoh, saya menguji perbedaan hak akses antara superuser, editor, pengguna biasa, dan pengunjung yang belum login. Saya juga menjalankan unit test untuk memastikan fitur yang ditambahkan tidak merusak implementasi sebelumnya.

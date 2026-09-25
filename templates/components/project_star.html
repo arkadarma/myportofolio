@@ -1,3 +1,5 @@
+{% if user.is_authenticated %}
+
 <form method="post"
       action="{% url 'main:toggle_star' project.id %}"
       class="star-form">
@@ -5,8 +7,7 @@
     {% csrf_token %}
 
     <button type="submit"
-            class="button-star{% if user in project.starred_by.all %} is-starred{% endif %}"
-            title="{% if project.starred_by.all %}Ditangani oleh {{ project.starred_by.all|join:', ' }}{% endif %}">
+            class="button-star{% if user in project.starred_by.all %} is-starred{% endif %}">
 
         <span aria-hidden="true">★</span>
 
@@ -23,3 +24,5 @@
     </button>
 
 </form>
+
+{% endif %}
