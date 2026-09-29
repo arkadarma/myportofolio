@@ -8,6 +8,7 @@ from main.views import (
     show_experience,
     show_projects,
     create_project,
+    create_project_ajax,
     update_project,
     get_projects_json,
     delete_project,
@@ -96,6 +97,12 @@ urlpatterns = [
         "projects/add/",
         create_project,
         name="create_project",
+    ),
+
+    path(
+        "projects/add-ajax/",
+        create_project_ajax,
+        name="create_project_ajax",
     ),
 
     path(

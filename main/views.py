@@ -1,9 +1,10 @@
 from django.utils import timezone
 from django.core import serializers
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
@@ -282,27 +283,12 @@ def delete_experience(request, experience_id):
 # =========================
 
 def show_projects(request):
-    json_response = get_projects_json(request)
-
-    projects = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8"),
-    )
-
-    projects = [
-        project.object
-        for project in projects
-    ]
-
-    name_query = request.GET.get(
-        "name",
-        ""
-    ).strip()
+    name_query = request.GET.get("name", "").strip()
 
     context = {
         "name": "I Komang Arka Darma Laksana",
-        "project_list": projects,
         "name_query": name_query,
+        "form": ProjectForm(),
         "is_editor": is_editor(request.user),
     }
 
@@ -348,6 +334,42 @@ def create_project(request):
         request,
         "projects_form.html",
         context
+    )
+
+
+# =========================
+# CREATE PROJECT VIA AJAX
+# HANYA SUPERUSER
+# =========================
+
+@require_POST
+def create_project_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {
+                "message": "Hanya pemilik portofolio yang dapat menambahkan proyek."
+            },
+            status=403
+        )
+
+    form = ProjectForm(request.POST)
+
+    if form.is_valid():
+        project = form.save()
+
+        return JsonResponse(
+            {
+                "message": "Proyek berhasil ditambahkan.",
+                "pk": str(project.id),
+            },
+            status=201
+        )
+
+    return JsonResponse(
+        {
+            "errors": form.errors.get_json_data()
+        },
+        status=400
     )
 
 
@@ -432,33 +454,47 @@ def toggle_star(request, project_id):
 # =========================
 
 def get_projects_json(request):
-    name_query = request.GET.get(
-        "name",
-        ""
-    ).strip()
+    name_query = request.GET.get("name", "").strip()
 
-    projects = Project.objects.all()
+    projects = Project.objects.prefetch_related("starred_by").all()
 
     if name_query:
         projects = projects.filter(
             name__icontains=name_query
         )
 
-    projects_json = serializers.serialize(
-        "json",
-        projects,
-        fields=[
-            "name",
-            "description",
-            "technology",
-            "project_url",
-            "project_image_url",
-        ],
-    )
+    data = []
 
-    return HttpResponse(
-        projects_json,
-        content_type="application/json",
+    for project in projects:
+        starred_users = project.starred_by.all()
+
+        is_starred = (
+            request.user in starred_users
+            if request.user.is_authenticated
+            else False
+        )
+
+        starred_by_names = ", ".join(
+            user.username for user in starred_users
+        )
+
+        data.append({
+            "pk": str(project.id),
+            "fields": {
+                "name": project.name,
+                "description": project.description,
+                "technology": project.technology,
+                "project_url": project.project_url,
+                "project_image_url": project.project_image_url,
+                "star_count": starred_users.count(),
+                "is_starred": is_starred,
+                "starred_by_names": starred_by_names,
+            }
+        })
+
+    return JsonResponse(
+        data,
+        safe=False
     )
 
 
