@@ -1,18 +1,23 @@
 # My Portfolio
 
-Website portfolio pribadi yang dibuat menggunakan HTML5, CSS3, dan Django. Website ini berisi informasi profil pribadi dan riwayat pendidikan.
+Website portfolio pribadi yang dibuat menggunakan HTML5, CSS3, dan Django. Website ini berisi informasi profil pribadi, riwayat pendidikan, pengalaman, dan project.
 
 ## Identitas
 
 - Nama: I Komang Arka Darma Laksana
+
 - NPM: 2506656791
+
 - Kelas: PBP D
 
 ## Teknologi yang Digunakan
 
 - HTML5
+
 - CSS3
+
 - Django
+
 - Git dan GitHub
 
 ### Tugas 1
@@ -30,12 +35,19 @@ Dalam pengerjaan Tugas 1 ini, saya menggunakan ChatGPT sebagai alat bantu pembel
 AI saya gunakan untuk membantu:
 
 - memahami struktur HTML5 dan penggunaan elemen semantik;
+
 - memahami konsep CSS responsive design;
+
 - menganalisis masalah pada tampilan website;
+
 - memahami struktur project Django;
+
 - memahami penggunaan Git, branch, commit, dan remote;
+
 - membantu proses deployment project ke PWS;
+
 - memahami instruksi dan rubrik tugas;
+
 - membantu menyusun dan memperbaiki dokumentasi README.
 
 AI tidak saya gunakan sebagai pengganti proses pengujian. Setelah mendapatkan penjelasan atau saran, saya menerapkannya pada project dan melakukan pengujian secara langsung pada browser, GitHub, dan PWS. Jika hasilnya belum sesuai dengan yang diinginkan, saya melakukan penyesuaian kembali terhadap kode.
@@ -57,11 +69,17 @@ Dalam proses Git, AI membantu saya memahami cara memisahkan pekerjaan Tugas 1 da
 Beberapa contoh prompt yang saya gunakan selama pengerjaan :
 
 1. Meminta penjelasan mengenai struktur kode dan hubungan antar file pada project.
+
 2. Meminta penjelasan mengenai penggunaan elemen semantik HTML5 seperti `<section>` dan `<article>`.
+
 3. Meminta bantuan memahami dan memperbaiki layout responsive menggunakan CSS.
+
 4. Meminta bantuan ketika tampilan website belum sesuai dengan desain yang diinginkan.
+
 5. Meminta penjelasan mengenai penggunaan branch Git untuk memisahkan Tugas 1 dari Tutorial 1.
+
 6. Meminta bantuan melakukan deployment branch `tugas-1` ke PWS.
+
 7. Meminta bantuan memahami instruksi dan rubrik tugas serta memperbaiki dokumentasi README.
 
 Percakapan dengan AI digunakan sebagai referensi selama proses pengerjaan, sedangkan implementasi akhir tetap saya terapkan, jalankan, dan uji sendiri pada project.
@@ -97,10 +115,15 @@ Dalam pengerjaan Tugas 2, saya menggunakan ChatGPT sebagai alat bantu untuk mema
 Bagian yang dibantu oleh AI meliputi:
 
 - Menentukan struktur model `Project` dengan minimal tiga field selain primary key.
+
 - Membantu menyusun view `show_projects` yang mengambil data dari model dan meneruskannya melalui context.
+
 - Membantu menyusun routing untuk halaman `/projects/`.
+
 - Membantu menyusun template `projects.html` dengan Django Template Language, termasuk perulangan data dan kondisi ketika database kosong.
+
 - Membantu menyusun unit test untuk menguji akses URL, tampilan data Project, dan kondisi ketika belum ada data.
+
 - Membantu memeriksa error dan memastikan seluruh unit test berhasil dijalankan.
 
 Saya tetap menjalankan kode, memeriksa hasil pada browser, menjalankan migration, menjalankan unit test, dan memverifikasi hasil implementasi secara langsung.
@@ -124,10 +147,15 @@ Dalam pengerjaan Tugas 3, saya menggunakan ChatGPT sebagai alat bantu untuk mema
 AI digunakan untuk membantu pada bagian:
 
 - Perancangan `ExperienceForm` pada `forms.py`.
+
 - Penambahan fungsi create, update, delete, serialization, dan deserialization pada `views.py`.
+
 - Penambahan routing pada `urls.py`.
+
 - Refactoring template menggunakan `{% extends "base.html" %}`.
+
 - Penyusunan dan perbaikan tampilan form serta modal konfirmasi delete pada HTML dan CSS.
+
 - Membantu menganalisis error dan memeriksa hasil implementasi selama pengujian.
 
 Seluruh implementasi tetap diuji secara manual pada project Django melalui browser dan `python manage.py check`. Saya juga melakukan penyesuaian manual terhadap kode, struktur template, CSS, dan alur fitur setelah hasil pengujian.
@@ -139,16 +167,27 @@ Pada Tugas 4, saya melanjutkan website portfolio Django dari Tugas 3 dengan mene
 Beberapa perubahan yang saya implementasikan meliputi:
 
 - Menambahkan role `Editor` menggunakan Django Group melalui Django Admin.
+
 - Menerapkan pembatasan hak akses berdasarkan role pengguna.
+
 - Superuser dapat membuat, mengubah, dan menghapus data portfolio.
+
 - Editor dapat mengubah data portfolio tetapi tidak dapat membuat atau menghapus data.
+
 - Pengguna biasa hanya dapat membaca data portfolio dan memberikan atau membatalkan star pada project.
+
 - Pengunjung yang belum login harus melakukan login sebelum melakukan tindakan yang membutuhkan akun.
+
 - Menerapkan pengecekan hak akses pada sisi server menggunakan `login_required` dan pengecekan role untuk menghasilkan HTTP 403 pada tindakan yang tidak diizinkan.
+
 - Menyembunyikan tombol create, update, dan delete pada template untuk pengguna yang tidak memiliki hak akses.
+
 - Menambahkan relasi `ManyToManyField` antara model `Project` dan model `User` untuk menyimpan pengguna yang memberikan star.
+
 - Mengimplementasikan fitur star dan unstar menggunakan request `POST` dengan `{% csrf_token %}`.
+
 - Menampilkan jumlah total star dan status star pengguna pada setiap project.
+
 - Memastikan endpoint JSON dari tugas sebelumnya tetap berfungsi dan tidak mengembalikan informasi pengguna yang memberikan star.
 
 #### AI Disclosure
@@ -158,12 +197,19 @@ Dalam pengerjaan Tugas 4, saya menggunakan ChatGPT sebagai alat bantu untuk mema
 AI digunakan untuk membantu pada bagian:
 
 - Memahami penggunaan Django Group sebagai role `Editor`.
+
 - Membantu menyusun dan memeriksa pengecekan authorization pada `views.py`.
+
 - Membantu menyusun routing untuk fitur update project.
+
 - Membantu menyesuaikan template agar kontrol create, update, dan delete tampil sesuai role pengguna.
+
 - Membantu mengimplementasikan dan memeriksa fitur star dan unstar menggunakan `ManyToManyField`.
+
 - Membantu menganalisis dan memperbaiki endpoint JSON agar tidak membocorkan informasi pengguna yang memberikan star.
+
 - Membantu menyusun dan memperluas unit test untuk menguji authentication, authorization, fitur star, dan endpoint JSON.
+
 - Membantu menganalisis error yang ditemukan selama implementasi dan pengujian.
 
 Setelah mendapatkan bantuan dari AI, saya menerapkan perubahan pada project, menjalankan aplikasi secara langsung, melakukan pengujian melalui browser, memeriksa hasil authorization untuk beberapa jenis pengguna, menjalankan migration, dan menjalankan unit test menggunakan `python manage.py test`.
@@ -181,11 +227,17 @@ Saya tidak langsung menerapkan semua saran yang diberikan. Setiap perubahan saya
 Beberapa contoh prompt yang saya gunakan selama pengerjaan Tugas 4:
 
 1. Meminta penjelasan mengenai cara menerapkan role `Editor` menggunakan Django Group.
+
 2. Meminta bantuan membatasi akses create, update, dan delete berdasarkan role pengguna.
+
 3. Meminta bantuan memperbaiki routing dan form agar halaman edit project tidak diarahkan ke endpoint create.
+
 4. Meminta bantuan memeriksa fitur star dan relasi `ManyToManyField` dengan model `User`.
+
 5. Meminta bantuan menganalisis endpoint JSON yang masih mengembalikan informasi `starred_by`.
+
 6. Meminta bantuan menyusun dan memeriksa unit test untuk authentication, authorization, star, dan API.
+
 7. Memberikan screenshot hasil pengujian seperti HTTP 403 dan redirect ke halaman login untuk memastikan implementasi sesuai requirement.
 
 #### Keterbatasan dan Evaluasi Penggunaan AI
@@ -193,3 +245,141 @@ Beberapa contoh prompt yang saya gunakan selama pengerjaan Tugas 4:
 Penggunaan AI membantu saya memahami konsep authorization dan debugging dengan lebih cepat, tetapi solusi yang diberikan tidak selalu dapat langsung diterapkan. Saya perlu memeriksa kembali apakah perubahan yang disarankan sesuai dengan struktur project dan requirement tugas.
 
 Saya melakukan verifikasi melalui pengujian langsung. Sebagai contoh, saya menguji perbedaan hak akses antara superuser, editor, pengguna biasa, dan pengunjung yang belum login. Saya juga menjalankan unit test untuk memastikan fitur yang ditambahkan tidak merusak implementasi sebelumnya.
+
+### Tugas 5
+
+1. **Jelaskan apa itu debouncing dan mengapa teknik ini penting diterapkan pada fitur pencarian yang menggunakan AJAX!**
+
+   Debouncing adalah teknik untuk menunda eksekusi suatu fungsi sampai pengguna berhenti melakukan suatu aktivitas selama waktu tertentu. Pada fitur pencarian AJAX, debouncing digunakan agar request ke server tidak dikirim setiap kali pengguna mengetik satu karakter. Dengan memberikan jeda, misalnya 300 milidetik, request hanya dikirim setelah pengguna berhenti mengetik. Hal ini dapat mengurangi jumlah request ke server dan membuat penggunaan fitur pencarian menjadi lebih efisien.
+
+2. **Jelaskan fungsi dari penggunaan `await` ketika kita menggunakan `fetch()`! Apa yang akan terjadi jika kita tidak menggunakan `await`?**
+
+   `await` digunakan untuk menunggu sampai Promise yang dihasilkan oleh `fetch()` selesai sebelum kode berikutnya dijalankan. Dengan menggunakan `await`, hasil dari `fetch()` dapat digunakan secara langsung sebagai sebuah nilai sehingga alur program lebih mudah dibaca dan dipahami. Jika `await` tidak digunakan, `fetch()` akan mengembalikan Promise dan kode berikutnya dapat berjalan sebelum response dari server selesai diterima. Jika ingin mengambil hasilnya, Promise tersebut perlu ditangani menggunakan `.then()` atau mekanisme asynchronous lainnya.
+
+3. **Jelaskan apa itu serangan XSS (Cross-Site Scripting) dan mengapa data yang ditampilkan melalui AJAX/JavaScript lebih rentan terhadap serangan ini daripada data yang ditampilkan langsung melalui template Django!**
+
+   XSS (Cross-Site Scripting) adalah serangan ketika data yang mengandung kode HTML atau JavaScript berbahaya berhasil dimasukkan ke dalam halaman dan kemudian dijalankan oleh browser pengguna. Data yang ditampilkan melalui AJAX/JavaScript lebih berisiko ketika langsung dimasukkan ke dalam `innerHTML` karena proses tersebut tidak otomatis mendapatkan auto-escaping dari template Django. Oleh karena itu, data yang berasal dari server perlu di-escape terlebih dahulu, misalnya menggunakan fungsi `escapeHtml()`, sehingga karakter HTML tidak diperlakukan sebagai kode yang dapat dieksekusi.
+
+#### AI Disclosure
+
+Dalam pengerjaan Tugas 5, saya menggunakan ChatGPT sebagai alat bantu pembelajaran, debugging, pemahaman konsep JavaScript dan AJAX, serta membantu memeriksa implementasi pada project portfolio Django.
+
+AI digunakan untuk membantu pada bagian:
+
+- Memahami konsep AJAX dan Fetch API.
+
+- Memahami implementasi pencarian data menggunakan `fetch()`.
+
+- Menerapkan pencarian berdasarkan field `title` pada halaman Experience.
+
+- Menerapkan debouncing dengan jeda 300 milidetik agar request pencarian tidak dikirim untuk setiap karakter.
+
+- Menggunakan `AbortController` untuk membatalkan request pencarian sebelumnya yang belum selesai.
+
+- Menyusun fungsi JavaScript untuk mengambil data Experience dari endpoint JSON dan merender data secara dinamis.
+
+- Membuat fungsi `escapeHtml()` untuk melakukan escaping terhadap data yang dimasukkan melalui `innerHTML`.
+
+- Menerapkan modal menggunakan Popover API.
+
+- Membuat submit form tambah Experience menggunakan AJAX tanpa reload halaman.
+
+- Menambahkan pengiriman CSRF token melalui header `X-CSRFToken`.
+
+- Menangani response HTTP `201`, `400`, dan `403` pada endpoint AJAX.
+
+- Mengintegrasikan toast notification untuk kondisi berhasil dan gagal.
+
+- Menambahkan sanitasi server-side menggunakan `strip_tags` melalui method `clean_title`, `clean_description`, dan `clean_category` pada `ExperienceForm`.
+
+- Membantu menganalisis dan memperbaiki error pada `views.py`, `urls.py`, `forms.py`, `experience.html`, `experience_form.html`, `experience_form_modal.html`, dan `experience.js`.
+
+Setelah mendapatkan bantuan dari AI, saya menerapkan perubahan pada project dan menguji hasilnya secara langsung melalui browser dan Django development server.
+
+#### Strategi Prompting
+
+Saya menggunakan prompting secara bertahap selama pengerjaan Tugas 5. Saya memberikan konteks berupa kode yang sedang digunakan, screenshot halaman, hasil pengujian, dan pesan error kepada ChatGPT. Kemudian saya meminta AI untuk menjelaskan penyebab masalah dan memberikan perubahan kode yang sesuai dengan struktur project.
+
+Ketika solusi awal belum menghasilkan perilaku yang sesuai, saya memberikan kondisi terbaru atau screenshot hasil pengujian kepada AI dan meminta analisis kembali. Dengan cara tersebut, saya menggunakan AI sebagai pendamping debugging dan pembelajaran, bukan hanya untuk menghasilkan kode.
+
+#### Bagian yang Dibantu AI
+
+Bagian yang dibantu AI pada Tugas 5 meliputi:
+
+- Implementasi endpoint JSON untuk Experience.
+
+- Implementasi pencarian Experience berdasarkan `title`.
+
+- Implementasi debouncing dan `AbortController`.
+
+- Implementasi rendering Experience menggunakan JavaScript.
+
+- Implementasi modal tambah Experience menggunakan Popover API.
+
+- Implementasi submit Experience melalui AJAX.
+
+- Implementasi CSRF pada request POST.
+
+- Implementasi toast notification untuk response berhasil dan gagal.
+
+- Implementasi escaping menggunakan `escapeHtml()`.
+
+- Implementasi sanitasi server-side menggunakan `strip_tags`.
+
+- Debugging integrasi antara template Django, JavaScript, view, form, dan URL.
+
+#### Log Prompting
+
+Beberapa contoh prompt yang saya gunakan selama pengerjaan Tugas 5:
+
+1. Meminta bantuan menerapkan AJAX pada halaman Experience agar data tidak perlu dimuat melalui render template secara langsung.
+
+2. Meminta bantuan membuat pencarian Experience berdasarkan judul menggunakan `fetch()`.
+
+3. Meminta bantuan menerapkan debouncing pada pencarian agar request hanya dikirim setelah pengguna berhenti mengetik.
+
+4. Meminta bantuan memperbaiki penggunaan `AbortController` pada request pencarian.
+
+5. Meminta bantuan membuat modal tambah Experience menggunakan Popover API dengan struktur yang konsisten dengan modal Project.
+
+6. Meminta bantuan membuat submit form tambah Experience menggunakan AJAX dan `FormData`.
+
+7. Meminta bantuan memperbaiki pemanggilan `showToast()` agar toast sukses menggunakan tipe `success` dan toast error menggunakan tipe `error`.
+
+8. Meminta bantuan menerapkan sanitasi server-side pada `ExperienceForm`.
+
+9. Meminta bantuan melakukan pengujian XSS dan memastikan payload HTML tidak dieksekusi.
+
+10. Meminta bantuan memeriksa request AJAX melalui Chrome DevTools pada tab Network, termasuk status HTTP `201` dan header `X-CSRFToken`.
+
+#### Keterbatasan dan Evaluasi Penggunaan AI
+
+Saya menemukan bahwa solusi dari AI tidak selalu dapat langsung diterapkan pada project. Beberapa bagian harus disesuaikan dengan struktur project yang sudah ada, terutama hubungan antara view, URL, template, form, dan JavaScript.
+
+Sebagai contoh, pada implementasi awal terdapat masalah pada pemanggilan fungsi `showToast()` karena urutan parameter yang digunakan tidak sesuai dengan struktur fungsi toast yang ada. Setelah diuji melalui browser, saya memperbaiki pemanggilan tersebut agar parameter title, message, dan type dikirim dengan benar.
+
+Saya juga melakukan pengujian manual terhadap validasi server dan XSS. Saya menguji input judul berupa tag HTML berbahaya pada local project dan memastikan server menolaknya, toast error muncul, dan tidak ada JavaScript yang dieksekusi. Selain itu, saya memeriksa request AJAX melalui Chrome DevTools untuk memastikan request `POST` berhasil dengan status `201`, diikuti request `GET` ke endpoint Experience, serta memastikan header `X-CSRFToken` ikut dikirim.
+
+AI membantu mempercepat proses memahami konsep dan menemukan kemungkinan penyebab masalah, tetapi hasil akhir tetap saya verifikasi dengan menjalankan aplikasi dan menguji fitur secara langsung.
+
+#### Progress Pengerjaan
+
+Pada Tugas 5, saya melanjutkan halaman Experience dari Tugas 3 dan Tugas 4 dengan menerapkan interaktivitas menggunakan JavaScript dan AJAX.
+
+Pertama, saya membuat endpoint JSON untuk mengambil data Experience dan menambahkan pencarian berdasarkan judul. Setelah itu saya menerapkan debouncing dan `AbortController` agar pencarian berjalan lebih efisien dan request sebelumnya dapat dibatalkan ketika diperlukan.
+
+Selanjutnya saya mengubah proses rendering Experience agar data diambil secara dinamis melalui JavaScript. Karena data AJAX dimasukkan menggunakan `innerHTML`, saya menambahkan fungsi `escapeHtml()` untuk melakukan escaping pada data yang ditampilkan.
+
+Saya kemudian membuat modal tambah Experience menggunakan Popover API. Form di dalam modal dikirim menggunakan AJAX sehingga Experience baru dapat ditambahkan tanpa melakukan reload halaman. Response server ditangani berdasarkan status HTTP dan hasilnya ditampilkan menggunakan toast notification.
+
+Sebagai bagian dari keamanan, saya menambahkan sanitasi input pada sisi server menggunakan `strip_tags` melalui method `clean_<field>` pada `ExperienceForm`. Saya juga melakukan pengujian XSS pada local project untuk memastikan input HTML berbahaya tidak dieksekusi.
+
+Setelah seluruh fitur selesai, saya melakukan pengujian melalui browser dan Chrome DevTools. Request `POST` ke endpoint AJAX berhasil menghasilkan status `201`, kemudian halaman melakukan request `GET` ke endpoint Experience untuk memperbarui daftar data tanpa reload. Header `X-CSRFToken` juga diperiksa melalui tab Network untuk memastikan token CSRF ikut terkirim.
+
+### AI Disclosure - General
+
+Dalam seluruh pengerjaan project portfolio selama semester, saya menggunakan ChatGPT sebagai alat bantu pembelajaran, debugging, pemahaman konsep, dan dokumentasi. Saya tetap melakukan implementasi, pengujian, penyesuaian kode, dan verifikasi hasil secara langsung pada project.
+
+AI tidak saya gunakan sebagai pengganti proses pengujian. Setiap perubahan yang dibantu AI diperiksa kembali melalui kode sumber, Django development server, browser, DevTools, dan pengujian lain yang relevan dengan tugas.
+
+Saya memahami bahwa output AI dapat mengandung kesalahan atau tidak sesuai dengan struktur project yang sedang digunakan. Oleh karena itu, saya melakukan evaluasi terhadap setiap saran dan menyesuaikannya secara manual sebelum digunakan sebagai bagian dari implementasi akhir.

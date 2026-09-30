@@ -5,18 +5,21 @@ from main.views import (
     register,
     login_user,
     logout_user,
+
     show_experience,
+    create_experience,
+    create_experience_ajax,
+    update_experience,
+    delete_experience,
+    get_experience_json,
+
     show_projects,
     create_project,
     create_project_ajax,
     update_project,
+    toggle_star,
     get_projects_json,
     delete_project,
-    toggle_star,
-    create_experience,
-    update_experience,
-    delete_experience,
-    get_experience_json,
 )
 
 
@@ -24,108 +27,125 @@ app_name = "main"
 
 
 urlpatterns = [
+
+    # =========================
+    # MAIN
+    # =========================
+
     path(
         "",
         show_main,
-        name="show_main",
+        name="show_main"
     ),
+
 
     # =========================
     # AUTHENTICATION
     # =========================
+
     path(
         "register/",
         register,
-        name="register",
+        name="register"
     ),
 
     path(
         "login/",
         login_user,
-        name="login",
+        name="login"
     ),
 
     path(
         "logout/",
         logout_user,
-        name="logout",
+        name="logout"
     ),
+
 
     # =========================
     # EXPERIENCE
     # =========================
+
     path(
         "experience/",
         show_experience,
-        name="show_experience",
+        name="show_experience"
     ),
 
     path(
         "experience/add/",
         create_experience,
-        name="create_experience",
+        name="create_experience"
+    ),
+
+    path(
+        "experience/add-ajax/",
+        create_experience_ajax,
+        name="create_experience_ajax"
     ),
 
     path(
         "experience/<uuid:experience_id>/edit/",
         update_experience,
-        name="update_experience",
+        name="update_experience"
     ),
 
     path(
         "experience/<uuid:experience_id>/delete/",
         delete_experience,
-        name="delete_experience",
+        name="delete_experience"
     ),
 
     path(
         "api/experience/",
         get_experience_json,
-        name="get_experience_json",
+        name="get_experience_json"
     ),
+
 
     # =========================
     # PROJECT
     # =========================
+
     path(
         "projects/",
         show_projects,
-        name="show_projects",
+        name="show_projects"
     ),
 
     path(
         "projects/add/",
         create_project,
-        name="create_project",
+        name="create_project"
     ),
 
     path(
         "projects/add-ajax/",
         create_project_ajax,
-        name="create_project_ajax",
+        name="create_project_ajax"
     ),
 
     path(
         "projects/<uuid:project_id>/edit/",
         update_project,
-        name="update_project",
+        name="update_project"
     ),
 
     path(
         "projects/<uuid:project_id>/star/",
         toggle_star,
-        name="toggle_star",
+        name="toggle_star"
     ),
 
     path(
         "api/projects/",
         get_projects_json,
-        name="get_projects_json",
+        name="get_projects_json"
     ),
 
     path(
         "projects/<uuid:project_id>/delete/",
         delete_project,
-        name="delete_project",
+        name="delete_project"
     ),
 ]

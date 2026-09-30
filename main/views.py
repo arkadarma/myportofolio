@@ -145,6 +145,7 @@ def show_experience(request):
         "name": "I Komang Arka Darma Laksana",
         "experience_list": experiences,
         "is_editor": is_editor(request.user),
+        "form": ExperienceForm(),
     }
 
     return render(
@@ -155,7 +156,14 @@ def show_experience(request):
 
 
 def get_experience_json(request):
+    title_query = request.GET.get("title", "").strip()
+
     experiences = Experience.objects.all()
+
+    if title_query:
+        experiences = experiences.filter(
+            title__icontains=title_query
+        )
 
     experiences_json = serializers.serialize(
         "json",
@@ -201,6 +209,45 @@ def create_experience(request):
         request,
         "experience_form.html",
         context
+    )
+
+
+# =========================
+# CREATE EXPERIENCE VIA AJAX
+# HANYA SUPERUSER
+# =========================
+
+@require_POST
+def create_experience_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {
+                "message": (
+                    "Hanya pemilik portofolio yang "
+                    "dapat menambahkan experience."
+                )
+            },
+            status=403
+        )
+
+    form = ExperienceForm(request.POST)
+
+    if form.is_valid():
+        experience = form.save()
+
+        return JsonResponse(
+            {
+                "message": "Experience berhasil ditambahkan.",
+                "pk": str(experience.id),
+            },
+            status=201
+        )
+
+    return JsonResponse(
+        {
+            "errors": form.errors.get_json_data()
+        },
+        status=400
     )
 
 
@@ -271,6 +318,10 @@ def delete_experience(request, experience_id):
         messages.success(
             request,
             "Experience berhasil dihapus!",
+        )
+
+        return redirect(
+            "main:show_experience"
         )
 
     return redirect(
