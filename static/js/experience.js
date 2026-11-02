@@ -1,5 +1,4 @@
-const EXPERIENCE_ENDPOINT = "/api/experience/";
-const CREATE_EXPERIENCE_ENDPOINT = "/experience/add-ajax/";
+const EXPERIENCE_ENDPOINT = "/api/v1/experiences/";
 
 const experienceList =
     document.getElementById("experience-list");
@@ -87,9 +86,9 @@ function displayError() {
 
 function buildExperienceCard(item) {
 
-    const experience = item.fields;
+    const experience = item;
 
-    const experienceId = item.pk;
+    const experienceId = item.id;
 
     const articleElement =
         document.createElement("article");
@@ -409,31 +408,28 @@ if (experienceForm) {
             submitButton.disabled = true;
 
 
-            const formData =
-                new FormData(
-                    experienceForm
-                );
+            const formData = new FormData(experienceForm);
+            const payload = Object.fromEntries(
+                ["title", "description", "category", "thumbnail", "ended_at"]
+                    .map(name => [name, formData.get(name)])
+            );
+            if (payload.ended_at === "") {
+                payload.ended_at = null;
+            }
 
 
             try {
 
                 const response =
-                    await fetch(
-                        CREATE_EXPERIENCE_ENDPOINT,
-                        {
-                            method: "POST",
-
-                            body: formData,
-
-                            headers: {
-                                "X-CSRFToken":
-                                    CSRF_TOKEN,
-
-                                "Accept":
-                                    "application/json"
-                            }
-                        }
-                    );
+                    await fetch(EXPERIENCE_ENDPOINT, {
+                        method: "POST",
+                        body: JSON.stringify(payload),
+                        headers: {
+                            "X-CSRFToken": CSRF_TOKEN,
+                            "Accept": "application/json",
+                            "Content-Type": "application/json",
+                        },
+                    });
 
 
                 const data =
@@ -497,8 +493,10 @@ if (experienceForm) {
 
                 else {
 
-                    let errorMessage =
-                        data.message ||
+                    let errorMessage = data.message ||
+                        Object.values(data).flat()
+                            .filter(value => typeof value === "string")
+                            .join(" ") ||
                         `Gagal menambahkan experience (${response.status}).`;
 
 

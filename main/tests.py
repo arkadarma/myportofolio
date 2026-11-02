@@ -114,22 +114,14 @@ class MainTest(TestCase):
             response,
             "experience.html"
         )
-        self.assertContains(
-            response,
-            self.experience.title
-        )
-        self.assertContains(
-            response,
-            self.experience.description
-        )
-        self.assertContains(
-            response,
-            "Part-Time"
-        )
-        self.assertContains(
-            response,
-            "Sedang berlangsung"
-        )
+        self.assertContains(response, 'id="experience-list"')
+        self.assertContains(response, 'id="experience-search-form"')
+        api_response = self.client.get(reverse("api:experience-list"))
+        self.assertEqual(api_response.status_code, 200)
+        self.assertEqual(api_response.data[0]["title"], self.experience.title)
+        self.assertEqual(api_response.data[0]["description"], self.experience.description)
+        self.assertEqual(api_response.data[0]["category"], "part-time")
+        self.assertTrue(api_response.data[0]["is_ongoing"])
         self.assertContains(
             response,
             f'href="{reverse("main:show_main")}"'
@@ -142,10 +134,9 @@ class MainTest(TestCase):
             reverse("main:show_experience")
         )
 
-        self.assertContains(
-            response,
-            "Belum ada pengalaman yang ditambahkan."
-        )
+        self.assertContains(response, 'id="experience-list"')
+        api_response = self.client.get(reverse("api:experience-list"))
+        self.assertEqual(api_response.data, [])
 
     def test_completed_experience(self):
         self.experience.ended_at = timezone.now()
@@ -158,14 +149,10 @@ class MainTest(TestCase):
         self.assertFalse(
             self.experience.is_ongoing
         )
-        self.assertContains(
-            response,
-            "Selesai"
+        api_response = self.client.get(
+            reverse("api:experience-detail", args=[self.experience.id])
         )
-        self.assertNotContains(
-            response,
-            "Sedang berlangsung"
-        )
+        self.assertFalse(api_response.data["is_ongoing"])
 
     # =========================
     # EXPERIENCE AUTHORIZATION
@@ -277,19 +264,13 @@ class MainTest(TestCase):
         response = self.client.get(
             reverse("main:show_projects")
         )
-
-        self.assertContains(
-            response,
-            self.project.name
-        )
-        self.assertContains(
-            response,
-            self.project.description
-        )
-        self.assertContains(
-            response,
-            self.project.technology
-        )
+        self.assertContains(response, 'id="grid"')
+        self.assertContains(response, reverse("api:project-list"))
+        api_response = self.client.get(reverse("api:project-list"))
+        self.assertEqual(api_response.status_code, 200)
+        self.assertEqual(api_response.data[0]["title"], self.project.name)
+        self.assertEqual(api_response.data[0]["description"], self.project.description)
+        self.assertEqual(api_response.data[0]["tech_stack"], self.project.technology)
 
     def test_empty_project_page(self):
         Project.objects.all().delete()
@@ -298,10 +279,9 @@ class MainTest(TestCase):
             reverse("main:show_projects")
         )
 
-        self.assertContains(
-            response,
-            "Belum ada proyek yang ditambahkan."
-        )
+        self.assertContains(response, 'id="empty"')
+        api_response = self.client.get(reverse("api:project-list"))
+        self.assertEqual(api_response.data, [])
 
     # =========================
     # PROJECT AUTHORIZATION
@@ -559,16 +539,7 @@ class MainTest(TestCase):
             reverse("main:get_projects_json")
         )
 
-        content = response.content.decode(
-            "utf-8"
-        )
-
-        self.assertNotIn(
-            "starred_by",
-            content
-        )
-
-        self.assertNotIn(
-            self.normal_user.username,
-            content
-        )
+        project_data = response.json()[0]["fields"]
+        self.assertNotIn("starred_by", project_data)
+        # Tutorial 05 intentionally exposes usernames as a display string.
+        self.assertEqual(project_data["starred_by_names"], self.normal_user.username)
