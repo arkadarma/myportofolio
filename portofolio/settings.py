@@ -13,10 +13,23 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 from pathlib import Path
 
 import os
+import secrets
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
+
+
+def env_bool(name, default=False):
+    """Read a boolean environment variable without treating arbitrary text as true."""
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {'1', 'true', 'yes', 'on'}
+
+
+PRODUCTION = env_bool('PRODUCTION')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,17 +38,33 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-mmi((#x_v8n%wr+eq-agq&316(nb7jo1wt6dsd!9++ruyfb+2x'
+# Production must receive a secret from the PWS environment. Development loads
+# it from the ignored local .env file, with an ephemeral fallback for fresh clones.
+SECRET_KEY = os.getenv('SECRET_KEY')
+if PRODUCTION and not SECRET_KEY:
+    raise ImproperlyConfigured('SECRET_KEY must be set in the production environment.')
+if not SECRET_KEY:
+    SECRET_KEY = secrets.token_urlsafe(50)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Development remains convenient locally; production always disables DEBUG.
+DEBUG = False if PRODUCTION else env_bool('DEBUG', True)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'i-komang54-myportofolio.pws.cs.ui.ac.id']
+PWS_HOST = 'i-komang54-myportofolio.pws.cs.ui.ac.id'
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', PWS_HOST]
+CSRF_TRUSTED_ORIGINS = [f'https://{PWS_HOST}']
 
-CSRF_TRUSTED_ORIGINS = ['https://i-komang54-myportofolio.pws.cs.ui.ac.id']
+# PWS serves HTTPS, but its forwarded-proto behavior has not been verified.
+# Keep redirect and HSTS opt-in until the proxy behavior is confirmed.
+# Only trust X-Forwarded-Proto after confirming PWS overwrites it at the proxy.
+if PRODUCTION and env_bool('PWS_TRUST_X_FORWARDED_PROTO'):
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-PRODUCTION = os.getenv('PRODUCTION', 'False').lower() == 'true'
+SECURE_SSL_REDIRECT = PRODUCTION and env_bool('SECURE_SSL_REDIRECT')
+SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '0')) if PRODUCTION else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_PRELOAD = False
+SESSION_COOKIE_SECURE = PRODUCTION
+CSRF_COOKIE_SECURE = PRODUCTION
 
 
 # Application definition
