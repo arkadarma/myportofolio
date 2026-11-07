@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
@@ -128,22 +129,10 @@ def logout_user(request):
 # EXPERIENCE
 # =========================
 
+@ensure_csrf_cookie
 def show_experience(request):
-    json_response = get_experience_json(request)
-
-    experiences = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8"),
-    )
-
-    experiences = [
-        experience.object
-        for experience in experiences
-    ]
-
     context = {
         "name": "I Komang Arka Darma Laksana",
-        "experience_list": experiences,
         "is_editor": is_editor(request.user),
         "form": ExperienceForm(),
     }

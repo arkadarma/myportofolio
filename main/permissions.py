@@ -21,3 +21,7 @@ class IsPortfolioOwnerOrEditorOrReadOnly(BasePermission):
             and request.user.is_authenticated
             and request.user.groups.filter(name="Editor").exists()
         )
+
+    def has_object_permission(self, request, view, obj):
+        # The same role rules apply to detail operations as to list operations.
+        return self.has_permission(request, view)

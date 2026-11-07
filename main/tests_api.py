@@ -198,6 +198,7 @@ class ExperienceAPITest(APITestCase):
         self.detail_url = reverse(
             "api:experience-detail", args=[self.experience.id]
         )
+        self.star_url = reverse("api:experience-star", args=[self.experience.id])
         self.payload = {
             "title": "New experience",
             "description": "A useful role",
@@ -208,45 +209,79 @@ class ExperienceAPITest(APITestCase):
             "ended_at": "",
         }
 
-    def test_editor_can_put_and_patch_but_not_post_or_delete(self):
-        self.client.force_authenticate(user=self.editor)
+    def test_all_roles_can_read_list_and_detail(self):
+        for user in (None, self.visitor, self.editor, self.owner):
+            self.client.force_authenticate(user=user)
+            self.assertEqual(self.client.get(self.list_url).status_code, status.HTTP_200_OK)
+            self.assertEqual(self.client.get(self.detail_url).status_code, status.HTTP_200_OK)
+
+    def test_anonymous_cannot_write_and_database_is_unchanged(self):
+        self.client.force_authenticate(user=None)
+        original = self.experience.title
         self.assertEqual(
-            self.client.patch(self.detail_url, {"title": "Edited"}, format="json").status_code,
-            status.HTTP_200_OK,
+            self.client.post(self.list_url, self.payload, format="json").status_code,
+            status.HTTP_403_FORBIDDEN,
         )
         self.assertEqual(
             self.client.put(self.detail_url, self.payload, format="json").status_code,
-            status.HTTP_200_OK,
-        )
-        self.assertEqual(
-            self.client.post(self.list_url, self.payload, format="json").status_code,
             status.HTTP_403_FORBIDDEN,
         )
         self.assertEqual(
-            self.client.delete(self.detail_url).status_code,
+            self.client.patch(self.detail_url, {"title": "Changed"}, format="json").status_code,
             status.HTTP_403_FORBIDDEN,
         )
+        self.assertEqual(self.client.delete(self.detail_url).status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(self.client.post(self.star_url).status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(Experience.objects.count(), 1)
+        self.experience.refresh_from_db()
+        self.assertEqual(self.experience.title, original)
 
-    def test_regular_user_cannot_manage_experience(self):
+    def test_regular_user_cannot_create_update_or_delete(self):
         self.client.force_authenticate(user=self.visitor)
-        self.assertEqual(
-            self.client.patch(self.detail_url, {"title": "No"}, format="json").status_code,
-            status.HTTP_403_FORBIDDEN,
-        )
+        original = self.experience.title
         self.assertEqual(
             self.client.post(self.list_url, self.payload, format="json").status_code,
             status.HTTP_403_FORBIDDEN,
         )
+        for method in ("put", "patch"):
+            response = getattr(self.client, method)(
+                self.detail_url,
+                self.payload if method == "put" else {"title": "No"},
+                format="json",
+            )
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(self.client.delete(self.detail_url).status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(Experience.objects.count(), 1)
+        self.experience.refresh_from_db()
+        self.assertEqual(self.experience.title, original)
+
+    def test_editor_can_put_and_patch_but_cannot_create_or_delete(self):
+        self.client.force_authenticate(user=self.editor)
+        response = self.client.patch(self.detail_url, {"title": "Edited"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["title"], "Edited")
+        response = self.client.put(self.detail_url, self.payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["title"], "New experience")
+        count = Experience.objects.count()
         self.assertEqual(
-            self.client.delete(self.detail_url).status_code,
+            self.client.post(self.list_url, self.payload, format="json").status_code,
             status.HTTP_403_FORBIDDEN,
         )
+        self.assertEqual(self.client.delete(self.detail_url).status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(Experience.objects.count(), count)
+        self.assertTrue(Experience.objects.filter(pk=self.experience.pk).exists())
+        self.assertEqual(self.client.post(self.star_url).status_code, status.HTTP_200_OK)
 
     def test_owner_can_manage_experience(self):
         self.client.force_authenticate(user=self.owner)
         self.assertEqual(
             self.client.post(self.list_url, self.payload, format="json").status_code,
             status.HTTP_201_CREATED,
+        )
+        self.assertEqual(
+            self.client.put(self.detail_url, self.payload, format="json").status_code,
+            status.HTTP_200_OK,
         )
         self.assertEqual(
             self.client.patch(self.detail_url, {"title": "Owner edit"}, format="json").status_code,
@@ -256,12 +291,94 @@ class ExperienceAPITest(APITestCase):
             self.client.delete(self.detail_url).status_code,
             status.HTTP_204_NO_CONTENT,
         )
+        self.assertFalse(Experience.objects.filter(pk=self.experience.pk).exists())
+
+    def test_serializer_sanitizes_and_validates_text_and_hides_sensitive_data(self):
+        self.client.force_authenticate(user=self.owner)
+        response = self.client.post(
+            self.list_url,
+            {**self.payload, "title": " <b>Mentor</b> ", "description": " <i>Helped</i> "},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["title"], "Mentor")
+        self.assertEqual(response.data["description"], "Helped")
+        self.assertNotIn("email", response.data)
+        self.assertNotIn("password", response.data)
+        self.assertNotIn("password_hash", response.data)
+        response = self.client.post(
+            self.list_url,
+            {**self.payload, "category": "<b>research</b>"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["category"], "research")
+
+        count = Experience.objects.count()
+        for invalid in (
+            {"title": "   "},
+            {"title": "<b></b>"},
+            {"description": "  "},
+            {"title": "x" * 256},
+            {"category": "  "},
+            {"category": "not-a-category"},
+        ):
+            response = self.client.post(
+                self.list_url, {**self.payload, **invalid}, format="json"
+            )
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Experience.objects.count(), count)
+
+    def test_computed_fields_cannot_be_forged(self):
+        self.client.force_authenticate(user=self.owner)
+        response = self.client.post(
+            self.list_url,
+            {**self.payload, "star_count": 99, "is_starred": True},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["star_count"], 0)
+        self.assertFalse(response.data["is_starred"])
+
+    def test_star_toggles_once_and_uses_authenticated_user(self):
+        self.client.force_authenticate(user=self.visitor)
+        response = self.client.post(self.star_url, {"user_id": self.owner.id}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data["is_starred"])
+        self.assertEqual(response.data["star_count"], 1)
+        self.assertTrue(self.experience.starred_by.filter(pk=self.visitor.pk).exists())
+        self.assertFalse(self.experience.starred_by.filter(pk=self.owner.pk).exists())
+        response = self.client.post(self.star_url)
+        self.assertFalse(response.data["is_starred"])
+        self.assertEqual(response.data["star_count"], 0)
+        self.assertEqual(self.experience.starred_by.count(), 0)
+
+    def test_session_write_requires_csrf_and_accepts_valid_token(self):
+        client = APIClient(enforce_csrf_checks=True)
+        self.assertTrue(client.login(username="owner", password="test-password"))
+        response = client.post(self.list_url, self.payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(Experience.objects.count(), 1)
+
+        page = client.get(reverse("main:show_experience"))
+        self.assertEqual(page.status_code, status.HTTP_200_OK)
+        token = client.cookies.get("csrftoken")
+        self.assertIsNotNone(token)
+        response = client.post(
+            self.list_url,
+            self.payload,
+            format="json",
+            HTTP_X_CSRFTOKEN=token.value,
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_experience_list_is_public(self):
         response = self.client.get(self.list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data[0]["id"], str(self.experience.id))
         self.assertTrue(response.data[0]["is_ongoing"])
+        self.assertEqual(response.data[0]["star_count"], 0)
+        self.assertFalse(response.data[0]["is_starred"])
         detail = self.client.get(self.detail_url)
         self.assertEqual(detail.status_code, status.HTTP_200_OK)
         self.assertEqual(detail.data["title"], self.experience.title)

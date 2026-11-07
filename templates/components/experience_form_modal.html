@@ -4,7 +4,7 @@
     popover="auto"
     role="dialog"
     aria-modal="true"
-    aria-labelledby="add-experience-modal-title"
+    aria-labelledby="experience-modal-title"
 >
 
     <button
@@ -23,25 +23,26 @@
             class="project-form-modal__close"
             popovertarget="add-experience-modal"
             popovertargetaction="hide"
-            aria-label="Tutup form tambah experience"
+            aria-label="Tutup form experience"
         >
             ×
         </button>
 
 
-        <h2 id="add-experience-modal-title">
-            Tambah Experience Baru
+        <h2 id="experience-modal-title">
+            Kelola Experience
         </h2>
 
 
         <form
             id="experience-form"
             method="post"
-            action="{% url 'main:create_experience' %}"
             class="experience-form"
         >
 
             {% csrf_token %}
+
+            <input type="hidden" id="experience-id">
 
 
             {% for field in form %}
@@ -84,7 +85,7 @@
                     type="submit"
                     class="button"
                 >
-                    Tambah Experience
+                    Simpan Experience
                 </button>
 
             </div>

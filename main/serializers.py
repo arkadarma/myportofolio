@@ -47,15 +47,18 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class ExperienceSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(max_length=20)
     is_ongoing = serializers.SerializerMethodField()
+    star_count = serializers.SerializerMethodField()
+    is_starred = serializers.SerializerMethodField()
 
     class Meta:
         model = Experience
         fields = [
             "id", "title", "description", "category", "thumbnail",
-            "started_at", "ended_at", "is_ongoing",
+            "started_at", "ended_at", "is_ongoing", "star_count", "is_starred",
         ]
-        read_only_fields = ["id", "started_at", "is_ongoing"]
+        read_only_fields = ["id", "started_at", "is_ongoing", "star_count", "is_starred"]
 
     def to_internal_value(self, data):
         # A blank optional datetime input represents an ongoing experience.
@@ -70,10 +73,30 @@ class ExperienceSerializer(serializers.ModelSerializer):
         return value
 
     def validate_description(self, value):
-        return strip_tags(value).strip()
+        value = strip_tags(value).strip()
+        if not value:
+            raise serializers.ValidationError("Description cannot be empty.")
+        return value
 
     def validate_category(self, value):
-        return strip_tags(value).strip()
+        value = strip_tags(value).strip()
+        if not value:
+            raise serializers.ValidationError("Category cannot be empty.")
+        valid_categories = {choice[0] for choice in Experience.EXPERIENCE_CHOICES}
+        if value not in valid_categories:
+            raise serializers.ValidationError("Select a valid experience category.")
+        return value
 
     def get_is_ongoing(self, obj):
         return obj.is_ongoing
+
+    def get_star_count(self, obj):
+        return obj.starred_by.count()
+
+    def get_is_starred(self, obj):
+        request = self.context.get("request")
+        return bool(
+            request
+            and request.user.is_authenticated
+            and obj.starred_by.filter(pk=request.user.pk).exists()
+        )

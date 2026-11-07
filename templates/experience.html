@@ -25,8 +25,8 @@
                 <div style="margin-bottom: 24px;">
                     <button
                         type="button"
+                        id="add-experience-button"
                         class="button project-add-button"
-                        popovertarget="add-experience-modal"
                     >
                         <span aria-hidden="true">+</span>
                         Tambah Experience
@@ -83,7 +83,7 @@
 </main>
 
 
-{% if user.is_superuser %}
+{% if user.is_superuser or is_editor %}
     {% include "components/experience_form_modal.html" %}
 {% endif %}
 
@@ -95,8 +95,9 @@
     const IS_EDITOR =
         "{{ is_editor|yesno:'true,false' }}" === "true";
 
-    const CSRF_TOKEN =
-        "{{ csrf_token }}";
+    const IS_AUTHENTICATED =
+        "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
+
 </script>
 
 

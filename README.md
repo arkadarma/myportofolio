@@ -383,3 +383,26 @@ Dalam seluruh pengerjaan project portfolio selama semester, saya menggunakan Cha
 AI tidak saya gunakan sebagai pengganti proses pengujian. Setiap perubahan yang dibantu AI diperiksa kembali melalui kode sumber, Django development server, browser, DevTools, dan pengujian lain yang relevan dengan tugas.
 
 Saya memahami bahwa output AI dapat mengandung kesalahan atau tidak sesuai dengan struktur project yang sedang digunakan. Oleh karena itu, saya melakukan evaluasi terhadap setiap saran dan menyesuaikannya secara manual sebelum digunakan sebagai bagian dari implementasi akhir.
+### Tugas 6
+
+1. **REST, JSON, PUT, dan PATCH**
+
+   REST (Representational State Transfer) adalah gaya arsitektur untuk merancang komunikasi antara client dan server. API yang mengikuti REST memodelkan hal-hal yang dikelola sebagai resource, memberi alamat resource melalui URL, menggunakan metode HTTP sesuai maksud operasi, dan menjaga komunikasi tetap stateless. Mengembalikan JSON saja belum cukup: JSON hanya format representasi data, sedangkan API juga perlu menerapkan prinsip seperti resource yang teridentifikasi, semantik HTTP yang konsisten, dan respons status yang sesuai. Pada API Experience, misalnya, `GET /api/v1/experiences/` membaca koleksi, sedangkan `GET /api/v1/experiences/<id>/` membaca satu resource.
+
+   `PUT` mengganti representasi resource secara menyeluruh sehingga client mengirim semua field wajib. `PATCH` hanya mengubah field yang dikirim. Pada proyek ini, Editor dapat memakai `PUT` untuk mengirim ulang seluruh judul, deskripsi, kategori, thumbnail, dan tanggal selesai Experience, atau `PATCH` saat hanya ingin memperbarui judul.
+
+2. **Peran serializer di Django REST Framework**
+
+   Serializer mengubah objek model menjadi data primitif yang dapat dirender sebagai JSON, dan melakukan proses sebaliknya dengan memvalidasi input sebelum menyimpan perubahan. `ExperienceSerializer` menetapkan field yang boleh keluar secara eksplisit, membersihkan dan memvalidasi teks, serta menghitung jumlah dan status star. Dibanding merakit dictionary secara manual dengan `JsonResponse`, serializer mengurangi kode berulang, menjaga representasi konsisten antara list dan detail, menangani validasi field serta relasi, dan memberikan error terstruktur yang dapat ditampilkan frontend.
+
+3. **Autentikasi dan otorisasi**
+
+   Autentikasi menentukan identitas peminta request; pada API ini `SessionAuthentication` membaca sesi login Django. Otorisasi menentukan tindakan yang boleh dilakukan oleh identitas tersebut. Permission class membolehkan pembacaan untuk semua orang, perubahan oleh anggota Group `Editor` dan superuser, serta pembuatan dan penghapusan hanya oleh superuser. Pemeriksaan di server wajib karena client dapat mengubah JavaScript atau mengirim request langsung tanpa memakai tombol halaman. Menyembunyikan tombol membantu pengalaman pengguna, tetapi tidak membatasi akses ke data maupun operasi API.
+
+4. **CSRF dan pengujian sesi**
+
+   Browser mengirim cookie sesi secara otomatis pada request same-origin. Karena itu, request perubahan yang memakai `SessionAuthentication` perlu token CSRF agar server dapat membedakan request yang berasal dari halaman aplikasi dari request lintas situs yang mencoba memanfaatkan sesi pengguna. Halaman Experience menerbitkan cookie CSRF dan JavaScript mengirim nilainya melalui header `X-CSRFToken`. `force_authenticate()` memasang identitas langsung pada request pengujian dan melewati alur login berbasis sesi serta pemeriksaan CSRF autentikasi; hasil uji dengan metode tersebut tidak membuktikan perlindungan CSRF. Test proyek menggunakan `APIClient(enforce_csrf_checks=True)`, `.login()`, dan request tanpa token maupun dengan token.
+
+#### AI Disclosure - Tugas 6
+
+Pada Tugas 6 ini saya menggunakan chatgpt untuk membaca instruksi tugas dan kode repository, menerapkan serializer, permission, API Experience, star, integrasi `fetch()`, test, dan dokumentasi, serta menganalisis error selama proses. chatgpt juga membantu menjalankan `makemigrations`, `migrate`, `check`, dan `test main`. Implementasi diuji dengan 51 test otomatis yang mencakup API Tutorial 07, role Experience, validasi, database, star, dan CSRF. Saya tetap perlu meninjau perubahan kode dan hasil pengujian sebelum membuat commit.
