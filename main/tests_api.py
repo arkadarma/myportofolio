@@ -1,8 +1,10 @@
 import uuid
+from secrets import token_urlsafe
 
 from django.contrib.auth.models import Group, User
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient, APITestCase
 
 from main.models import Experience, Project
@@ -51,19 +53,22 @@ class ProjectAPITest(APITestCase):
         self.assertEqual(self.client.get(url).status_code, status.HTTP_404_NOT_FOUND)
 
     def test_guest_and_visitor_cannot_write(self):
-        for user in (None, self.visitor):
+        for user, expected_status in (
+            (None, status.HTTP_401_UNAUTHORIZED),
+            (self.visitor, status.HTTP_403_FORBIDDEN),
+        ):
             self.client.force_authenticate(user=user)
             self.assertEqual(
                 self.client.post(self.list_url, self.payload, format="json").status_code,
-                status.HTTP_403_FORBIDDEN,
+                expected_status,
             )
             self.assertEqual(
                 self.client.patch(self.detail_url, {"title": "Changed"}, format="json").status_code,
-                status.HTTP_403_FORBIDDEN,
+                expected_status,
             )
             self.assertEqual(
                 self.client.delete(self.detail_url).status_code,
-                status.HTTP_403_FORBIDDEN,
+                expected_status,
             )
         self.client.force_authenticate(user=None)
         self.assertEqual(Project.objects.count(), 1)
@@ -176,6 +181,65 @@ class ProjectAPITest(APITestCase):
             HTTP_X_CSRFTOKEN=token.value,
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+class ProjectTokenAPITest(APITestCase):
+    def test_token_login_project_permissions_and_logout(self):
+        password = token_urlsafe()
+        owner = User.objects.create_superuser(username="token-owner", password=password)
+        visitor = User.objects.create_user(username="token-visitor", password=password)
+        login_url = reverse("api:api_token_auth")
+        logout_url = reverse("api:api-logout")
+        projects_url = reverse("api:project-list")
+        payload = {
+            "title": "New project",
+            "description": "Created from the API",
+            "tech_stack": "Flutter, Django",
+            "project_url": "https://example.com/project",
+            "project_image_url": "",
+        }
+
+        self.assertEqual(self.client.get(projects_url).data, [])
+        self.assertEqual(self.client.post(logout_url).status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(
+            self.client.post(login_url, {"username": owner.username}).status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+        for user, expected in (
+            (visitor, status.HTTP_403_FORBIDDEN),
+            (owner, status.HTTP_201_CREATED),
+        ):
+            credentials = {"username": user.username, "password": password}
+            login = self.client.post(login_url, credentials, format="json")
+            self.assertEqual(login.status_code, status.HTTP_200_OK)
+            auth = {"HTTP_AUTHORIZATION": f'Token {login.data["token"]}'}
+            response = self.client.post(projects_url, payload, format="json", **auth)
+            self.assertEqual(response.status_code, expected)
+            logout = self.client.post(logout_url, **auth)
+            self.assertEqual(logout.status_code, status.HTTP_204_NO_CONTENT)
+            self.assertEqual(logout.content, b"")
+            self.assertFalse(Token.objects.filter(user=user).exists())
+            self.assertEqual(
+                self.client.post(projects_url, payload, format="json", **auth).status_code,
+                status.HTTP_401_UNAUTHORIZED,
+            )
+
+        public = self.client.get(projects_url)
+        self.assertEqual(public.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(public.data), 1)
+        self.assertEqual(public.data[0]["title"], payload["title"])
+
+    def test_cors_preflight_for_flutter_token_post(self):
+        origin = "http://localhost:5000"
+        response = self.client.options(
+            reverse("api:project-list"),
+            HTTP_ORIGIN=origin,
+            HTTP_ACCESS_CONTROL_REQUEST_METHOD="POST",
+            HTTP_ACCESS_CONTROL_REQUEST_HEADERS="authorization,content-type",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response["Access-Control-Allow-Origin"], "*")
+        self.assertIn("authorization", response["Access-Control-Allow-Headers"])
 
 
 class ExperienceAPITest(APITestCase):
